@@ -36,3 +36,167 @@ plt.grid(True)
 plt.legend()
 plt.show()
 
+
+# ==========================================
+# 1. FUNGSI KEANGGOTAAN BAYI
+# Parameter: (0, 2, 3, 5)
+# ==========================================
+
+def fungsi_bayi_naik(x):
+    a, b = 0, 2
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_bayi_turun(x):
+    c, d = 3, 5
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+
+# ==========================================
+# 2. FUNGSI KEANGGOTAAN ANAK-ANAK
+# Parameter: (6, 8, 9, 11)
+# ==========================================
+
+def fungsi_anak_anak_naik(x):
+    a, b = 6, 8
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_anak_anak_turun(x):
+    c, d = 9, 11
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+
+
+# ==========================================
+# 3. FUNGSI KEANGGOTAAN REMAJA
+# Parameter: (10, 14, 15, 19)
+# ==========================================
+
+def fungsi_remaja_naik(x):
+    a, b = 10, 14
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_remaja_turun(x):
+    c, d = 15, 19
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+
+
+# ==========================================
+# 4. FUNGSI KEANGGOTAAN PEMUDA
+# Parameter: (15, 19, 20, 24)
+# ==========================================
+
+def fungsi_pemuda_naik(x):
+    a, b = 15, 19
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_pemuda_turun(x):
+    c, d = 20, 24
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+
+
+
+
+# ==========================================
+# 5. FUNGSI KEANGGOTAAN DEWASA
+# Parameter: (20, 42, 43, 65)
+# ==========================================
+
+def fungsi_dewasa_naik(x):
+    a, b = 20, 42
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_dewasa_turun(x):
+    c, d = 43, 65
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+ 
+# ==========================================
+# 6. FUNGSI KEANGGOTAAN LANSIA
+# Parameter: (60, 69, 71, 80)
+# ==========================================
+
+def fungsi_lansia_naik(x):
+    a, b = 60, 69
+
+    if x < a or x > b:
+        return 0
+    elif a <= x < b:
+        return (x - a) / (b - a)
+    else:
+        return 1
+
+
+def fungsi_lansia_turun(x):
+    c, d = 71, 80
+
+    if x < c or x > d:
+        return 0
+    elif c < x <= d:
+        return (d - x) / (d - c)
+    else:
+        return 1
+
+
+
