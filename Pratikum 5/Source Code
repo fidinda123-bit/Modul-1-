@@ -1,0 +1,268 @@
+import numpy as np
+import matplotlib.pyplot as plt
+# ==========================================
+# 1. FUNGSI KEANGGOTAAN TRAPESIUM
+# ==========================================
+def trapezoid(x, a, b, c, d):
+    x = np.asarray(x)
+
+    return np.maximum(
+        np.minimum(
+            np.minimum(
+                (x - a) / (b - a) if b != a else 1,
+                1
+            ),
+            (d - x) / (d - c) if d != c else 1
+        ),
+        0
+    )
+# ==========================================
+# 2. FUNGSI KEANGGOTAAN SEGITIGA
+# ==========================================
+
+def triangle(x, a, b, c):
+    x = np.asarray(x)
+
+    return np.maximum(
+        np.minimum(
+            (x - a) / (b - a),
+            (c - x) / (c - b)
+        ),
+        0
+    )
+
+# ==========================================
+# 3. MODEL VARIABEL LINGUISTIK
+# ==========================================
+
+variabel = {
+
+    "latensi": {
+        "semesta": (0, 200),
+        "satuan": "ms",
+        "fungsi": {
+            "Rendah": ("trapesium", [0, 0, 40, 80]),
+            "Sedang": ("segitiga", [50, 100, 150]),
+            "Tinggi": ("trapesium", [120, 160, 200, 200])
+        }
+    },
+
+    "packet_loss": {
+        "semesta": (0, 20),
+        "satuan": "%",
+        "fungsi": {
+            "Rendah": ("trapesium", [0, 0, 4, 8]),
+            "Sedang": ("segitiga", [5, 10, 15]),
+            "Tinggi": ("trapesium", [12, 16, 20, 20])
+        }
+    },
+
+    "kualitas_jaringan": {
+        "semesta": (0, 100),
+        "satuan": "poin",
+        "fungsi": {
+            "Buruk": ("trapesium", [0, 0, 30, 50]),
+            "Cukup": ("segitiga", [40, 60, 80]),
+            "Baik": ("trapesium", [70, 85, 100, 100])
+        }
+    }
+}
+
+# ==========================================
+# 4. MENGHITUNG NILAI KEANGGOTAAN
+# ==========================================
+
+def hitung_keanggotaan(x, jenis, parameter):
+
+    if jenis == "trapesium":
+        return float(trapezoid(
+            x,
+            parameter[0],
+            parameter[1],
+            parameter[2],
+            parameter[3]
+        ))
+
+    elif jenis == "segitiga":
+        return float(triangle(
+            x,
+            parameter[0],
+            parameter[1],
+            parameter[2]
+        ))
+
+    return 0.0
+# ==========================================
+# 5. FUNGSI FUZZIFIKASI
+# ==========================================
+
+def fuzzifikasi(input_dict):
+
+    hasil = {}
+
+    for nama_variabel, nilai in input_dict.items():
+
+        hasil[nama_variabel] = {}
+
+        model = variabel[nama_variabel]
+
+        for label, (jenis, parameter) in model["fungsi"].items():
+
+            nilai_mu = hitung_keanggotaan(
+                nilai,
+                jenis,
+                parameter
+            )
+
+            hasil[nama_variabel][label] = round(
+                nilai_mu,
+                3
+            )
+
+    return hasil
+# ==========================================
+# 6. FUNGSI VISUALISASI
+# ==========================================
+
+def plot_variabel(nama_variabel):
+
+    model = variabel[nama_variabel]
+
+    batas_bawah, batas_atas = model["semesta"]
+
+    x = np.linspace(
+        batas_bawah,
+        batas_atas,
+        500
+    )
+
+    plt.figure(figsize=(9, 5))
+
+    for label, (jenis, parameter) in model["fungsi"].items():
+
+        if jenis == "trapesium":
+
+            y = trapezoid(
+                x,
+                parameter[0],
+                parameter[1],
+                parameter[2],
+                parameter[3]
+            )
+
+        elif jenis == "segitiga":
+
+            y = triangle(
+                x,
+                parameter[0],
+                parameter[1],
+                parameter[2]
+            )
+
+        plt.plot(
+            x,
+            y,
+            linewidth=2,
+            label=label
+        )
+
+    plt.title(
+        f"Fungsi Keanggotaan {nama_variabel.replace('_', ' ').title()}"
+    )
+
+    plt.xlabel(
+        f"Nilai ({model['satuan']})"
+    )
+
+    plt.ylabel(
+        "Derajat Keanggotaan"
+    )
+
+    plt.ylim(0, 1.05)
+    plt.xlim(batas_bawah, batas_atas)
+
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+
+    nama_file = f"{nama_variabel}.png"
+
+    plt.savefig(
+        nama_file,
+        dpi=300,
+        bbox_inches="tight"
+    )
+
+    plt.show()
+
+    print(f"Grafik berhasil disimpan: {nama_file}")
+
+# ==========================================
+# 7. MENAMPILKAN GRAFIK
+# ==========================================
+
+plot_variabel("latensi")
+plot_variabel("packet_loss")
+plot_variabel("kualitas_jaringan")
+
+# ==========================================
+# 8. PENGUJIAN FUZZIFIKASI
+# ==========================================
+
+data_uji = {
+    "Kasus 1": {
+        "latensi": 20,
+        "packet_loss": 1
+    },
+
+    "Kasus 2": {
+        "latensi": 100,
+        "packet_loss": 10
+    },
+
+    "Kasus 3": {
+        "latensi": 75,
+        "packet_loss": 7
+    },
+
+    "Kasus 4": {
+        "latensi": 5,
+        "packet_loss": 0.5
+    },
+
+    "Kasus 5": {
+        "latensi": 190,
+        "packet_loss": 18
+    }
+}
+
+# ==========================================
+# 9. MENJALANKAN FUZZIFIKASI
+# ==========================================
+
+for nama_kasus, input_data in data_uji.items():
+
+    print("\n" + "=" * 50)
+    print(nama_kasus)
+    print("=" * 50)
+
+    print(
+        "Input:",
+        input_data
+    )
+
+    hasil = fuzzifikasi(input_data)
+
+    print("Hasil fuzzifikasi:")
+
+    for variabel_nama, nilai in hasil.items():
+
+        print(
+            f"\n{variabel_nama}:"
+        )
+
+        for label, derajat in nilai.items():
+
+            print(
+                f"  {label}: {derajat}"
+            )
+
