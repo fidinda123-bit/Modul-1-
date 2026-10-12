@@ -1,0 +1,245 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# =========================================================
+# 1. FUNGSI OPERATOR T-NORM
+# =========================================================
+
+def tnorm_min(a, b):
+    return np.minimum(a, b)
+
+
+def tnorm_product(a, b):
+    return a * b
+
+
+def tnorm_bounded_diff(a, b):
+    return np.maximum(0, a + b - 1)
+
+
+# =========================================================
+# 2. FUNGSI OPERATOR T-CONORM
+# =========================================================
+
+def tconorm_max(a, b):
+    return np.maximum(a, b)
+
+
+def tconorm_algebraic_sum(a, b):
+    return a + b - (a * b)
+
+
+def tconorm_bounded_sum(a, b):
+    return np.minimum(1, a + b)
+
+
+# =========================================================
+# 3. FUNGSI COMPLEMENT
+# =========================================================
+
+def fuzzy_not(a):
+    return 1 - a
+
+
+# =========================================================
+# 4. FUNGSI KEANGGOTAAN A
+# Ketersediaan Bandwidth Cukup
+# Triangle [30, 60, 90]
+# =========================================================
+
+def membership_A(x):
+    x = np.asarray(x, dtype=float)
+
+    hasil = np.zeros_like(x)
+
+    naik = (x > 30) & (x <= 60)
+    hasil[naik] = (x[naik] - 30) / (60 - 30)
+
+    turun = (x > 60) & (x < 90)
+    hasil[turun] = (90 - x[turun]) / (90 - 60)
+
+    return hasil
+
+
+# =========================================================
+# 5. FUNGSI KEANGGOTAAN B
+# Packet Loss Rendah
+# Trapezoid [40, 55, 75, 95]
+# =========================================================
+
+def membership_B(x):
+    x = np.asarray(x, dtype=float)
+
+    hasil = np.zeros_like(x)
+
+    naik = (x > 40) & (x <= 55)
+    hasil[naik] = (x[naik] - 40) / (55 - 40)
+
+    tengah = (x > 55) & (x <= 75)
+    hasil[tengah] = 1
+
+    turun = (x > 75) & (x < 95)
+    hasil[turun] = (95 - x[turun]) / (95 - 75)
+
+    return hasil
+
+
+# =========================================================
+# 6. MEMBENTUK UNIVERSE
+# =========================================================
+
+x = np.linspace(0, 100, 1001)
+
+A = membership_A(x)
+B = membership_B(x)
+
+
+# =========================================================
+# 7. OPERASI INTERSECTION / AND
+# =========================================================
+
+intersection_min = tnorm_min(A, B)
+intersection_product = tnorm_product(A, B)
+
+
+# =========================================================
+# 8. OPERASI UNION / OR
+# =========================================================
+
+union_max = tconorm_max(A, B)
+union_algebraic_sum = tconorm_algebraic_sum(A, B)
+
+
+# =========================================================
+# 9. OPERASI COMPLEMENT A
+# =========================================================
+
+complement_A = fuzzy_not(A)
+
+
+# =========================================================
+# 10. PENGUJIAN PADA x = 35, 50, 65, 80
+# =========================================================
+
+nilai_uji = [35, 50, 65, 80]
+
+print("=" * 90)
+print("HASIL PENGUJIAN OPERASI HIMPUNAN FUZZY")
+print("=" * 90)
+
+print(
+    f"{'x':>5} "
+    f"{'μA':>10} "
+    f"{'μB':>10} "
+    f"{'Min':>10} "
+    f"{'Product':>10} "
+    f"{'Max':>10} "
+    f"{'Alg.Sum':>10} "
+    f"{'¬A':>10}"
+)
+
+print("-" * 90)
+
+for nilai in nilai_uji:
+
+    a = float(membership_A(np.array([nilai]))[0])
+    b = float(membership_B(np.array([nilai]))[0])
+
+    hasil_min = float(tnorm_min(a, b))
+    hasil_product = float(tnorm_product(a, b))
+    hasil_max = float(tconorm_max(a, b))
+    hasil_alg_sum = float(tconorm_algebraic_sum(a, b))
+    hasil_complement = float(fuzzy_not(a))
+
+    print(
+        f"{nilai:>5} "
+        f"{a:>10.4f} "
+        f"{b:>10.4f} "
+        f"{hasil_min:>10.4f} "
+        f"{hasil_product:>10.4f} "
+        f"{hasil_max:>10.4f} "
+        f"{hasil_alg_sum:>10.4f} "
+        f"{hasil_complement:>10.4f}"
+    )
+
+print("=" * 90)
+
+
+# =========================================================
+# 11. GRAFIK FUNGSI KEANGGOTAAN A DAN B
+# =========================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, A, label='A - Ketersediaan Bandwidth Cukup')
+plt.plot(x, B, label='B - Packet Loss Rendah')
+
+plt.title('Fungsi Keanggotaan A dan B')
+plt.xlabel('Throughput (Mbps)')
+plt.ylabel('Derajat Keanggotaan μ(x)')
+plt.ylim(0, 1.05)
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+# =========================================================
+# 12. GRAFIK INTERSECTION
+# =========================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, intersection_min, label='Zadeh Min')
+plt.plot(x, intersection_product, label='Algebraic Product')
+
+plt.title('Intersection / AND')
+plt.xlabel('Throughput (Mbps)')
+plt.ylabel('Derajat Keanggotaan μ(x)')
+plt.ylim(0, 1.05)
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+# =========================================================
+# 13. GRAFIK UNION
+# =========================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, union_max, label='Zadeh Max')
+plt.plot(x, union_algebraic_sum, label='Algebraic Sum')
+
+plt.title('Union / OR')
+plt.xlabel('Throughput (Mbps)')
+plt.ylabel('Derajat Keanggotaan μ(x)')
+plt.ylim(0, 1.05)
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+# =========================================================
+# 14. GRAFIK COMPLEMENT
+# =========================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.plot(x, complement_A, label='Complement ¬A')
+
+plt.title('Complement Himpunan A')
+plt.xlabel('Throughput (Mbps)')
+plt.ylabel('Derajat Keanggotaan μ(x)')
+plt.ylim(0, 1.05)
+plt.grid(True)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
